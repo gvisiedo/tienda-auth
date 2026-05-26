@@ -6,11 +6,31 @@ const Usuario = require('../models/Usuario')
 
 // POST /auth/registro
 router.post('/registro', async function(req, res) {
+  try{ 
   // 1. Leer nombre, email y password del body
+  const nombre = req.body.nombre
+  const email = req.body.email
+  const password = req.body.password
   // 2. Comprobar si el email ya existe
+  const existe = await Usuario.findOne({email:email})
+  if(existe){
+    res.status(400).json({error: 'El email ya esta registrado'})
+    return
+  }
   // 3. Encriptar la contraseña con bcrypt
+  const passwordHash = await bcrypt.hash(password, 10)
   // 4. Crear el usuario en la base de datos
+  const nuevoUsuario = new Usuario({
+    nombre:nombre,
+    email:email,
+    password: passwordHash
+  })
+  await nuevoUsuario.save()
   // 5. Devolver el usuario creado
+  res.json({nombre: nuevoUsuario.nombre, email: nuevoUsuario.email})
+}catch(error){
+  res.status(500).json({error: 'Error en el Registro'})
+}
 })
 
 // POST /auth/login
@@ -21,19 +41,5 @@ router.post('/login', async function(req, res) {
   // 4. Generar un JWT
   // 5. Devolver el token
 })
-router.get('/productos', async function(req,res){
 
-})
-router.get('/productos/:id', async function(req,res){
-
-})
-router.post('/productos', async function(req,res){
-
-})
-router.put('/productos/:id', async function(req,res){
-
-})
-router.delete('/productos/:id', async function(req,res){
-
-})
 module.exports = router
