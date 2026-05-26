@@ -5,8 +5,14 @@ const Producto = require('../models/Producto')
 const esAdmin = require('../middleware/esAdmin')
 
 router.get('/', async function(req,res){
-    const productos = Producto.find()
-    res.json(productos)
+    try {
+        const productos = await Producto.find()
+        res.json(productos)
+        
+    } catch (error) {
+        res.status(500).json({error:'Producto no encontrado'})
+        
+    }
 })
 router.get('/:id', authMiddleware, async function(req,res){
     try {
@@ -57,3 +63,5 @@ router.delete('/:id', authMiddleware, esAdmin, async function(req,res){
     
   }
 })
+
+module.exports = router
