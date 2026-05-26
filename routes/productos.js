@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../middleware/auth')
 const Producto = require('../models/Producto')
+const esAdmin = require('../middleware/esAdmin')
 
 router.get('/', async function(req,res){
     const productos = Producto.find()
@@ -20,16 +21,16 @@ router.get('/:id', authMiddleware, async function(req,res){
     }
 
 })
-router.post('/', authMiddleware, async function(req,res){
+router.post('/', authMiddleware, esAdmin, async function(req,res){
     try {
         const productos = new Producto(req.body)
-        await Producto.save()
+        await productos.save()
         res.json(productos)
     } catch (error) {
         res.status(500).json({error: 'Error al crear producto'})
     }
 })
-router.put('/productos/:id', authMiddleware, async function(req,res){
+router.put('/:id', authMiddleware, esAdmin, async function(req,res){
       try {
     const productos = await Producto.findByIdAndUpdate(req.params.id, req.body,{new:true})
     if(!productos){
@@ -43,7 +44,7 @@ router.put('/productos/:id', authMiddleware, async function(req,res){
     
   }
 })
-router.delete('/productos/:id', authMiddleware, async function(req,res){
+router.delete('/:id', authMiddleware, esAdmin, async function(req,res){
       try {
     const productos = await Producto.findByIdAndDelete(req.params.id)
     if(!productos){
