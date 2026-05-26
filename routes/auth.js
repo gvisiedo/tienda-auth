@@ -23,7 +23,8 @@ router.post('/registro', async function(req, res) {
   const nuevoUsuario = new Usuario({
     nombre:nombre,
     email:email,
-    password: passwordHash
+    password: passwordHash,
+    rol: req.body.rol
   })
   await nuevoUsuario.save()
   // 5. Devolver el usuario creado
